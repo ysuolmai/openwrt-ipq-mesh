@@ -65,7 +65,7 @@ Current behavior:
 - `mesh-ac-approve <node-id>` marks AP as approved.
 - Approved APs can fetch rendered config through `/cgi-bin/mesh-ac/config`.
 - `mesh-ac-apply-local` renders local AC config to JSON and calls `mesh-agent-apply --preserve-lan`.
-- AC package depends on `mesh-agent` so the shared apply helper is present.
+- AC image config selects `mesh-agent` so the shared apply helper is present, while avoiding a package-level dependency cycle.
 
 Security status:
 
@@ -171,7 +171,7 @@ Current behavior:
   - `test_config_only`
 - Default source repo is `https://github.com/VIKINGYFY/immortalwrt.git` because it contains `redmi_ax5`, `redmi_ax5-jdcloud`, and `zn_m2` profiles.
 - `config_name` manual selection was removed.
-- After `make defconfig`, workflow runs `scripts/check-openwrt-config.sh` to verify required device profiles, Wi-Fi driver/firmware/BDF packages, KVR-capable `wpad-openssl`, DAWN, uMDNS, and `batman-adv` packages.
+- After `make defconfig`, workflow runs `scripts/check-openwrt-config.sh` to verify required device profiles, Wi-Fi driver/firmware symbols, source-side BDF packages, KVR-capable `wpad-openssl`, DAWN, uMDNS, and `batman-adv` packages.
 
 Validation already done:
 

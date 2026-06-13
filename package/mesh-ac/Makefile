@@ -12,7 +12,7 @@ define Package/mesh-ac
   SECTION:=net
   CATEGORY:=Network
   TITLE:=Mesh AC controller service
-  DEPENDS:=+uhttpd +uhttpd-mod-ubus +libustream-openssl +jsonfilter +jshn +curl +mesh-agent
+  DEPENDS:=+uhttpd +uhttpd-mod-ubus +libustream-openssl +jsonfilter +jshn +curl
 endef
 
 define Package/mesh-ac/description

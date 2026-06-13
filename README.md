@@ -106,7 +106,7 @@ https://github.com/VIKINGYFY/immortalwrt.git
 - 目标设备 profile 是否存在
 - `kmod-ath11k-ahb` / `kmod-ath11k-pci`
 - IPQ6018 `ath11k` firmware
-- 各设备对应 `ipq-wifi-*` BDF 包
+- 源码设备 profile 中各设备对应的 `ipq-wifi-*` BDF 包
 - `wpad-openssl`
 - `batman-adv` / `batctl`
 - DAWN / uMDNS
