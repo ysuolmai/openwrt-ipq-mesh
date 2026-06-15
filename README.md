@@ -122,6 +122,8 @@ IPQ workflow 默认分支是 `main`，因为该 fork 包含 `redmi_ax5`、`redmi
 
 MTK workflow 单独放在 `.github/workflows/build-mtk.yml`，默认分支是 `owrt`，跟随上游 `MTK-ALL.yml`。
 
+workflow 参考上游 OpenWRT-CI 启用构建缓存：非 `test_config_only` 构建会缓存 `.ccache`、`staging_dir/host*` 和 `staging_dir/tool*`，并在恢复缓存后刷新 toolchain stamp，减少重复编译时间。
+
 `make defconfig` 后 workflow 会运行 `scripts/check-openwrt-config.sh`，主动检查以下关键内容：
 
 - 目标设备 profile 是否存在

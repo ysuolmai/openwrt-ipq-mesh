@@ -21,6 +21,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   build:
@@ -60,6 +61,31 @@ jobs:
           git clone --depth=1 --single-branch --branch "$SOURCE_BRANCH" "$SOURCE_REPO" openwrt
           cd openwrt
           echo "SOURCE_HASH=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+
+      - name: Restore build cache
+        if: env.TEST_CONFIG_ONLY != 'true'
+        uses: actions/cache@v4
+        with:
+          key: ${{ env.CONFIG_NAME }}-${{ env.SOURCE_BRANCH }}-${{ env.SOURCE_HASH }}
+          restore-keys: |
+            ${{ env.CONFIG_NAME }}-${{ env.SOURCE_BRANCH }}-
+            ${{ env.CONFIG_NAME }}-
+          path: |
+            openwrt/.ccache
+            openwrt/staging_dir/host*
+            openwrt/staging_dir/tool*
+
+      - name: Refresh cached toolchain stamps
+        if: env.TEST_CONFIG_ONLY != 'true'
+        run: |
+          cd openwrt
+          if [ -d staging_dir ]; then
+            find staging_dir -type d -name stamp -not -path '*target*' | while read -r dir; do
+              find "$dir" -type f -exec touch {} +
+            done
+            mkdir -p tmp
+            echo 1 > tmp/.build
+          fi
 
       - name: Update feeds
         run: |
