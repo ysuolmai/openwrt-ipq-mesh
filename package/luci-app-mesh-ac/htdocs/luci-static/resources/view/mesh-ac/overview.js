@@ -28,16 +28,17 @@ return view.extend({
 		o = s.option(form.Button, "apply_local", _("Apply local mesh config"));
 		o.inputtitle = _("Apply");
 		o.inputstyle = "apply";
+		o.write = function() {};
+		o.remove = function() {};
 		o.onclick = function() {
-			return fs.exec("/usr/sbin/mesh-ac-apply-local").then(function() {
-				ui.addNotification(null, E("p", _("Local mesh config applied.")));
+			return this.map.save(null, true).then(function() {
+				return fs.exec("/usr/sbin/mesh-ac-apply-local");
+			}).then(function() {
+				ui.addNotification(null, E("p", _("Mesh config saved and applied to this AC.")));
 			}).catch(function(e) {
 				ui.addNotification(null, E("p", e.message || _("Failed to apply local mesh config.")), "danger");
 			});
 		};
-		o = s.option(form.Value, "pairing_token", _("Pairing token"));
-		o.password = true;
-
 		s.option(form.Value, "ssid", _("Client SSID"));
 		o = s.option(form.Value, "key", _("Client password"));
 		o.password = true;

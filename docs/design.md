@@ -23,7 +23,7 @@ reachable by AP agents during pairing and config pulls.
 
 ## AP Agent Responsibilities
 
-- register with AC using a shared pairing token
+- register with AC while pairing is enabled
 - pull config after approval
 - apply OpenWrt UCI wireless/network/DAWN settings
 - keep last config locally

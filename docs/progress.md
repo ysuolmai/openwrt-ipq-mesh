@@ -69,9 +69,8 @@ Current behavior:
 
 Security status:
 
-- MVP uses a shared pairing token.
-- Token defaults are placeholders and must be changed before real use.
-- Future improvement should add pairing window and per-AP credentials.
+- Home-use pairing is tokenless: `pairing_enabled=1` allows new AP registration, while approved APs can continue to fetch config after pairing is disabled.
+- Future improvement can add a timed pairing window or per-AP credentials if stronger security is needed.
 
 ### `mesh-agent`
 
@@ -119,7 +118,6 @@ Current UI:
 - pairing enable flag
 - AC local mesh member flag
 - local apply button
-- pairing token
 - client SSID/password
 - country
 - mobility domain
@@ -187,8 +185,10 @@ Current behavior:
   - `source_branch` (`main` for IPQ, `owrt` for MTK)
   - `test_config_only`
 - Default source repo is `https://github.com/VIKINGYFY/immortalwrt.git`.
+- AC images clone `eamonxg/luci-theme-shadcn` during prepare and select `CONFIG_PACKAGE_luci-theme-shadcn=y`; AP images remain LuCI-less.
 - `config_name` manual selection was removed.
-- After `make defconfig`, workflow runs `scripts/check-openwrt-config.sh` to verify required device profiles, Wi-Fi driver/firmware symbols, source-side support files, KVR-capable `wpad-openssl`, DAWN, uMDNS, and `batman-adv` packages.
+- After `make defconfig`, workflow runs `scripts/check-openwrt-config.sh` to verify required device profiles, Wi-Fi driver/firmware symbols, source-side support files, KVR-capable `wpad-openssl`, DAWN, uMDNS, `batman-adv`, and the shadcn LuCI theme on AC images.
+- Full firmware release collection follows the upstream OpenWRT-CI packaging style by collecting files from `bin/targets` while pruning package repositories. This keeps IPQ NAND factory outputs such as Redmi AX5 and ZN M2 `factory.ubi` without relying on a filename-extension whitelist.
 - `Clean Artifacts` deletes completed workflow runs, deletes config-only releases, and keeps only the latest full firmware release per config target.
 
 Validation already done:
@@ -222,7 +222,7 @@ Implemented design:
 - LuCI has `Enable AC local mesh member` and `Apply local mesh config` controls.
 - `/usr/sbin/mesh-ac-apply-local` renders AC config into the same JSON structure used by managed APs.
 - It calls `/usr/sbin/mesh-agent-apply --preserve-lan /tmp/mesh-ac-local-config.json`.
-- `mesh-agent-apply --preserve-lan` applies Wi-Fi APs, 802.11s backhaul, `batman-adv`, and DAWN while preserving AC LAN/WAN/DHCP/firewall behavior.
+- `mesh-agent-apply --preserve-lan` applies Wi-Fi APs, 802.11s backhaul, `batman-adv`, and DAWN while preserving AC LAN/WAN/DHCP/firewall behavior. It removes existing LAN AP Wi-Fi interfaces such as the default `ImmortalWrt` SSID so the AC only advertises the configured mesh client SSID.
 - Normal managed AP agent service is disabled on AC images so AC does not register to itself as a normal AP.
 - Local apply is explicit through LuCI or `/usr/sbin/mesh-ac-apply-local`; first boot does not broadcast placeholder Wi-Fi credentials automatically.
 
@@ -311,13 +311,13 @@ Possible later improvement:
 - DHCP option based hint
 - QR/token based onboarding
 
-### 3. Pairing security is primitive
+### 3. Pairing security is intentionally simple
 
-Current shared token is only MVP-level.
+For home use, AP onboarding no longer uses a shared token. New APs can register only while `pairing_enabled` is on. Approved APs can keep pulling config after pairing is turned off.
 
-Future:
+Future, if stronger onboarding is needed:
 
-- pairing window
+- timed pairing window
 - per-node key
 - certificate or signed token
 - reject unknown AP after pairing window closes

@@ -13,6 +13,8 @@ CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_rax3000m=y
 CONFIG_PACKAGE_luci=y
 CONFIG_PACKAGE_luci-ssl=y
 CONFIG_LUCI_LANG_zh_Hans=y
+CONFIG_PACKAGE_luci-theme-bootstrap=n
+CONFIG_PACKAGE_luci-theme-shadcn=y
 CONFIG_PACKAGE_mesh-ac=y
 CONFIG_PACKAGE_luci-app-mesh-ac=y
 

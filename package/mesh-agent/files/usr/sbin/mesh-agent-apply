@@ -44,6 +44,24 @@ find_radio() {
 	printf '%s' "$FOUND_RADIO"
 }
 
+delete_lan_ap_ifaces() {
+	config_load wireless
+	config_foreach _delete_lan_ap_iface wifi-iface
+}
+
+_delete_lan_ap_iface() {
+	local section="$1"
+	local mode network
+
+	config_get mode "$section" mode
+	config_get network "$section" network
+	[ "$mode" = "ap" ] || return
+
+	case " $network " in
+		*" lan "*) uci -q delete "wireless.$section" ;;
+	esac
+}
+
 _find_radio() {
 	local section="$1"
 	local wanted="$2"
@@ -158,6 +176,7 @@ ensure_bat0_lan_port
 delete_wifi_iface_by_name mesh_backhaul
 delete_wifi_iface_by_name mesh_ap_2g
 delete_wifi_iface_by_name mesh_ap_5g
+delete_lan_ap_ifaces
 
 if [ -n "$mesh_radio" ]; then
 	uci -q add wireless wifi-iface

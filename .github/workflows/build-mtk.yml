@@ -87,9 +87,9 @@ jobs:
           mkdir -p upload
           cp .config "upload/config-${CONFIG_NAME}-${SOURCE_HASH}.txt"
           if [ "$TEST_CONFIG_ONLY" != "true" ]; then
-            find bin/targets -type f \
-              \( -name '*.bin' -o -name '*.img.gz' -o -name '*.itb' -o -name '*.manifest' -o -name '*.buildinfo' -o -name 'sha256sums' \) \
-              -exec cp {} upload/ \;
+            find bin/targets \
+              -type d -name packages -prune -o \
+              -type f -exec cp -f {} upload/ \;
           fi
 
       - name: Release artifacts

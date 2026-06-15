@@ -22,6 +22,19 @@ cp -R "$ROOT_DIR/package/." "$OPENWRT_DIR/package/openwrt-ipq-mesh/"
 
 cat "$CONFIG_FILE" >> "$OPENWRT_DIR/.config"
 
+install_shadcn_theme() {
+	local dst="$OPENWRT_DIR/package/luci-theme-shadcn"
+
+	if [ -d "$dst" ]; then
+		rm -rf "$dst"
+	fi
+	git clone --depth=1 --single-branch --branch main \
+		https://github.com/eamonxg/luci-theme-shadcn.git "$dst"
+
+	find "$OPENWRT_DIR/feeds/luci/collections" -type f -name Makefile \
+		-exec sed -i 's/luci-theme-bootstrap/luci-theme-shadcn/g' {} +
+}
+
 filter_ipq60xx_devices() {
 	sed -i "/^CONFIG_TARGET_DEVICE_qualcommax_ipq60xx_DEVICE_/{
 		/\\(redmi_ax5\\|redmi_ax5-jdcloud\\|jdcloud_re-ss-01\\|qihoo_360v6\\|zn_m2\\)=y$/!d
@@ -147,10 +160,19 @@ filter_mt7981_devices() {
 }
 
 case "$CONFIG_NAME" in
-	IPQ60XX-MESH-*)
+	IPQ60XX-MESH-AC)
+		install_shadcn_theme
 		filter_ipq60xx_devices
 		;;
-	MT7981-MESH-*)
+	IPQ60XX-MESH-AP)
+		filter_ipq60xx_devices
+		;;
+	MT7981-MESH-AC)
+		install_shadcn_theme
+		inject_sx_7981r128
+		filter_mt7981_devices
+		;;
+	MT7981-MESH-AP)
 		inject_sx_7981r128
 		filter_mt7981_devices
 		;;

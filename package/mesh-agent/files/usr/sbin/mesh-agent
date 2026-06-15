@@ -150,23 +150,21 @@ resolve_ac() {
 
 register() {
 	local ac="$1"
-	local token="$2"
 	local id
 	local body
 
 	id="$(node_id)"
-	body="$(printf '{"id":"%s","mac":"%s","model":"%s","token":"%s"}' "$id" "$(lan_mac)" "$(model_name)" "$token")"
+	body="$(printf '{"id":"%s","mac":"%s","model":"%s"}' "$id" "$(lan_mac)" "$(model_name)")"
 	post_json "$ac/register" "$body" || true
 }
 
 pull_config() {
 	local ac="$1"
-	local token="$2"
 	local id
 	local body
 
 	id="$(node_id)"
-	body="$(printf '{"id":"%s","token":"%s"}' "$id" "$token")"
+	body="$(printf '{"id":"%s"}' "$id")"
 	post_json "$ac/config" "$body"
 }
 
@@ -182,9 +180,8 @@ apply_if_approved() {
 }
 
 main() {
-	local ac token interval cfg
+	local ac interval cfg
 
-	token="$(uci_get mesh_agent.main.pairing_token '')"
 	interval="$(uci_get mesh_agent.main.poll_interval 30)"
 	ac=""
 
@@ -195,8 +192,8 @@ main() {
 		if [ -z "$ac" ] || ! probe_ac "$ac"; then
 			ac="$(resolve_ac)"
 		fi
-		register "$ac" "$token"
-		cfg="$(pull_config "$ac" "$token" || true)"
+		register "$ac"
+		cfg="$(pull_config "$ac" || true)"
 		if [ -n "$cfg" ] && apply_if_approved "$cfg"; then
 			log "applied AC config from $ac"
 		else

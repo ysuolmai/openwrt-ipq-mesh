@@ -29,12 +29,13 @@ uci_get() {
 	uci -q get "$1" 2>/dev/null || printf '%s' "$2"
 }
 
-require_token() {
-	local token="$1"
-	local expected
+pairing_enabled() {
+	[ "$(uci_get mesh_ac.main.pairing_enabled 1)" = "1" ]
+}
 
-	expected="$(uci_get mesh_ac.main.pairing_token '')"
-	[ -n "$expected" ] && [ "$token" = "$expected" ]
+node_approved() {
+	local file="$1"
+	[ "$(jsonfilter -i "$file" -e "@.approved" 2>/dev/null || echo false)" = "true" ]
 }
 
 register_node() {
@@ -42,16 +43,21 @@ register_node() {
 	local mac="$2"
 	local model="$3"
 	local ip="$4"
-	local now
-	local file
+	local now approved
+	local file node
 
 	now="$(date +%s)"
+	node="/etc/mesh-ac/nodes/$id.json"
+	approved=false
+	if [ -f "$node" ] && node_approved "$node"; then
+		approved=true
+	fi
+
 	file="$TMP/node-$id.json"
-	printf '{"id":"%s","mac":"%s","model":"%s","ip":"%s","approved":false,"last_seen":%s}\n' \
-		"$id" "$mac" "$model" "$ip" "$now" > "$file"
-	# Keep storage simple for v0.1: one JSON file per node plus a flat list.
+	printf '{"id":"%s","mac":"%s","model":"%s","ip":"%s","approved":%s,"last_seen":%s}\n' \
+		"$id" "$mac" "$model" "$ip" "$approved" "$now" > "$file"
 	mkdir -p /etc/mesh-ac/nodes
-	cp "$file" "/etc/mesh-ac/nodes/$id.json"
+	cp "$file" "$node"
 }
 
 render_config() {
@@ -106,21 +112,25 @@ case "$PATH_INFO" in
 		id="$(json_get id)"
 		mac="$(json_get mac)"
 		model="$(json_get model)"
-		token="$(json_get token)"
 		ip="${REMOTE_ADDR:-}"
-		if [ -z "$id" ] || ! require_token "$token"; then
-			printf '{"ok":false,"error":"unauthorized"}\n'
+		node="/etc/mesh-ac/nodes/$id.json"
+		if [ -z "$id" ]; then
+			printf '{"ok":false,"error":"missing-id"}\n'
+			exit 0
+		fi
+		if [ ! -f "$node" ] && ! pairing_enabled; then
+			printf '{"ok":false,"error":"pairing-disabled"}\n'
 			exit 0
 		fi
 		register_node "$id" "$mac" "$model" "$ip"
-		printf '{"ok":true,"approved":false}\n'
+		approved="$(jsonfilter -i "$node" -e '@.approved' 2>/dev/null || echo false)"
+		printf '{"ok":true,"approved":%s}\n' "$approved"
 		;;
 	/config)
 		header_json
 		id="$(json_get id)"
-		token="$(json_get token)"
-		if [ -z "$id" ] || ! require_token "$token"; then
-			printf '{"approved":false,"error":"unauthorized"}\n'
+		if [ -z "$id" ]; then
+			printf '{"approved":false,"error":"missing-id"}\n'
 			exit 0
 		fi
 		node="/etc/mesh-ac/nodes/$id.json"
