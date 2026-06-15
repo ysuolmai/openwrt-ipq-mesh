@@ -1,5 +1,10 @@
 #!/bin/sh
 
+uci -q get mesh_ac.main.enabled >/dev/null 2>&1 || uci set mesh_ac.main.enabled='1'
+uci -q get mesh_ac.main.pairing_enabled >/dev/null 2>&1 || uci set mesh_ac.main.pairing_enabled='1'
+uci -q get mesh_ac.main.local_member >/dev/null 2>&1 || uci set mesh_ac.main.local_member='1'
+uci commit mesh_ac >/dev/null 2>&1 || true
+
 /etc/init.d/mesh-ac enable >/dev/null 2>&1 || true
 /etc/init.d/uhttpd enable >/dev/null 2>&1 || true
 /etc/init.d/uhttpd restart >/dev/null 2>&1 || true

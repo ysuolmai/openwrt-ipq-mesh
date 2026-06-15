@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -eu
+set -e
 
 . /usr/share/libubox/jshn.sh
 
@@ -8,7 +8,7 @@ uci_get() {
 	uci -q get "$1" 2>/dev/null || printf '%s' "$2"
 }
 
-enabled="$(uci_get mesh_ac.main.local_member 0)"
+enabled="$(uci_get mesh_ac.main.local_member 1)"
 [ "$enabled" = "1" ] || {
 	logger -t mesh-ac "local mesh member disabled"
 	exit 0

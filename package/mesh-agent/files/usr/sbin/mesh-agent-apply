@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -eu
+set -e
 
 preserve_lan=0
 if [ "${1:-}" = "--preserve-lan" ]; then
@@ -32,7 +32,10 @@ _delete_wifi_iface_by_name() {
 	local name
 
 	config_get name "$section" name
-	[ "$name" = "$target" ] && uci -q delete "wireless.$section"
+	if [ "$name" = "$target" ]; then
+		uci -q delete "wireless.$section"
+	fi
+	return 0
 }
 
 find_radio() {
@@ -55,11 +58,12 @@ _delete_lan_ap_iface() {
 
 	config_get mode "$section" mode
 	config_get network "$section" network
-	[ "$mode" = "ap" ] || return
+	[ "$mode" = "ap" ] || return 0
 
 	case " $network " in
 		*" lan "*) uci -q delete "wireless.$section" ;;
 	esac
+	return 0
 }
 
 _find_radio() {
@@ -67,7 +71,7 @@ _find_radio() {
 	local wanted="$2"
 	local band htmode
 
-	[ -n "$FOUND_RADIO" ] && return
+	[ -n "$FOUND_RADIO" ] && return 0
 	config_get band "$section" band
 	config_get htmode "$section" htmode
 
@@ -75,6 +79,7 @@ _find_radio() {
 		2g:2g:*|2g:*:HT*) FOUND_RADIO="$section" ;;
 		5g:5g:*|5g:*:VHT*|5g:*:HE*) FOUND_RADIO="$section" ;;
 	esac
+	return 0
 }
 
 set_radio_common() {
@@ -94,10 +99,13 @@ find_bridge_section() {
 	local section="$1"
 	local name type
 
-	[ -n "$BRIDGE_SECTION" ] && return
+	[ -n "$BRIDGE_SECTION" ] && return 0
 	config_get name "$section" name
 	config_get type "$section" type
-	[ "$name" = "br-lan" ] && [ "$type" = "bridge" ] && BRIDGE_SECTION="$section"
+	if [ "$name" = "br-lan" ] && [ "$type" = "bridge" ]; then
+		BRIDGE_SECTION="$section"
+	fi
+	return 0
 }
 
 ensure_bat0_lan_port() {
@@ -207,7 +215,11 @@ add_ap_iface() {
 	uci -q set wireless.@wifi-iface[-1].ieee80211k="$ieee80211k"
 	uci -q set wireless.@wifi-iface[-1].bss_transition="$ieee80211v"
 	uci -q set wireless.@wifi-iface[-1].wnm_sleep_mode="$ieee80211v"
-	uci -q set wireless.@wifi-iface[-1].time_advertisement="$ieee80211v"
+	if [ "$ieee80211v" = "1" ]; then
+		uci -q set wireless.@wifi-iface[-1].time_advertisement=2
+	else
+		uci -q set wireless.@wifi-iface[-1].time_advertisement=0
+	fi
 	uci -q set wireless.@wifi-iface[-1].ieee80211r="$ieee80211r"
 	uci -q set wireless.@wifi-iface[-1].mobility_domain="$mobility_domain"
 	uci -q set wireless.@wifi-iface[-1].ft_over_ds="$ft_over_ds"
