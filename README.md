@@ -2,7 +2,7 @@
 
 https://sc.350303.xyz/register?aff=C8X8NEL4BXX6
 
-# OpenWrt Mesh AC
+# OpenWrt EasyMesh
 
 一个基于 OpenWrt / ImmortalWrt 的 Mesh AC + AP 管理项目，当前支持 IPQ60XX 和 MT7981。
 
@@ -63,13 +63,13 @@ AC 的 LuCI 管理页面：
 - 配置 802.11k/v/r
 - 配置 DAWN 开关
 - 查看 AP 在线状态和最后上报时间
-- 有本机 Wi-Fi 和 `mesh-ac-local-member` 时，显示 AC 本地 Mesh 成员模式和本机 active state
+- 有本机 Wi-Fi 和 `mesh-ac-local-member` 时，显示 AC 本地 Mesh 成员模式，表单优先读取本机实际生效配置
 - no-wifi / controller-only 固件中，页面只显示纯 AC 控制器配置和 AP 列表
 
 页面路径：
 
 ```text
-Services -> Mesh AC
+Services -> EasyMesh
 ```
 
 ### `mesh-agent`
@@ -149,7 +149,7 @@ workflow 参考上游 OpenWRT-CI 启用构建缓存：非 `test_config_only` 构
 IPQ 编译：
 
 1. 打开 GitHub 仓库的 `Actions`
-2. 选择 `Build IPQ Mesh`
+2. 选择 `Build IPQ EasyMesh`
 3. 点击 `Run workflow`
 4. workflow 会同时构建 `IPQ60XX-MESH-AC` 和 `IPQ60XX-MESH-AP`
 5. 如只想验证配置，勾选 `test_config_only`
@@ -157,7 +157,7 @@ IPQ 编译：
 MTK 编译：
 
 1. 打开 GitHub 仓库的 `Actions`
-2. 选择 `Build MTK Mesh`
+2. 选择 `Build MTK EasyMesh`
 3. 点击 `Run workflow`
 4. workflow 会同时构建 `MT7981-MESH-AC` 和 `MT7981-MESH-AP`
 5. 如只想验证配置，勾选 `test_config_only`
@@ -203,7 +203,7 @@ MT7981-MESH-AC
 进入 LuCI 后打开：
 
 ```text
-Services -> Mesh AC
+Services -> EasyMesh
 ```
 
 建议先修改：
@@ -219,7 +219,7 @@ Country
 2.4 GHz channel
 ```
 
-页面顶部的 `Current active state` 显示设备当前实际生效的网络和 Wi-Fi 状态。`Network mode` 默认按实际状态初始化，避免 `/etc/config/mesh_ac` 中的期望值和系统当前网络状态不一致时误导操作。
+页面打开时，表单字段会优先读取设备当前实际生效的网络和 Wi-Fi 状态；如果某项没有实时状态可读，就回退到 `/etc/config/mesh_ac` 里的保存值，避免页面显示旧值。
 
 `Network mode` 默认是 `Bridge`：AC 的 WAN/LAN、客户端 Wi-Fi 和 Mesh 回程会处在同一个二层 LAN，客户端地址来自上游 DHCP。如果 AC 要作为主路由提供 DHCP/NAT，改成 `Gateway`。
 
@@ -229,14 +229,14 @@ Country
 
 ## 作为插件加入其他编译项目
 
-还是使用这个仓库：`https://github.com/ysuolmai/openwrt-ipq-mesh`。
+还是使用这个仓库：`https://github.com/ysuolmai/openwrt-easymesh`。
 
 如果只是想把 AC 管理功能加到其他 OpenWrt / ImmortalWrt 编译项目里，可以把本仓库的 `package/` 目录作为自定义包导入。最简单的做法是在目标源码树里执行：
 
 ```sh
-git clone --depth=1 https://github.com/ysuolmai/openwrt-ipq-mesh.git /tmp/openwrt-ipq-mesh
-mkdir -p package/openwrt-ipq-mesh
-cp -R /tmp/openwrt-ipq-mesh/package/. package/openwrt-ipq-mesh/
+git clone --depth=1 https://github.com/ysuolmai/openwrt-easymesh.git /tmp/openwrt-easymesh
+mkdir -p package/openwrt-easymesh
+cp -R /tmp/openwrt-easymesh/package/. package/openwrt-easymesh/
 ```
 
 然后按需要选择包组合。
@@ -293,7 +293,7 @@ CONFIG_PACKAGE_luci-theme-bootstrap=n
 CONFIG_PACKAGE_luci-theme-shadcn=y
 ```
 
-`luci-app-mesh-ac` 是同一套页面。它会通过 `/usr/sbin/mesh-ac-status` 自动检测本机是否有 Wi-Fi 驱动或 `/etc/config/wireless`，以及是否安装了 `mesh-ac-local-member`：检测不到时就是纯 AC 界面；检测到时才显示 `Enable AC local mesh member`、`Network mode` 和本机 active state。
+`luci-app-mesh-ac` 是同一套页面。它会通过 `/usr/sbin/mesh-ac-status` 自动检测本机是否有 Wi-Fi 驱动或 `/etc/config/wireless`，以及是否安装了 `mesh-ac-local-member`：检测不到时就是纯 AC 界面；检测到时才显示 `Enable AC local mesh member`、`Network mode` ，并优先读取本机实际生效配置。
 
 ### 2. 刷 AP 固件
 

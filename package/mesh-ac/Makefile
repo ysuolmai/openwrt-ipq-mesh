@@ -11,12 +11,12 @@ include $(INCLUDE_DIR)/package.mk
 define Package/mesh-ac
   SECTION:=net
   CATEGORY:=Network
-  TITLE:=Mesh AC controller service
+  TITLE:=EasyMesh controller service
   DEPENDS:=+uhttpd +uhttpd-mod-ubus +libustream-openssl +jsonfilter +jshn +umdns
 endef
 
 define Package/mesh-ac/description
-  Minimal AC service for managing OpenWrt mesh AP agents.
+  Minimal EasyMesh controller service for managing OpenWrt AP agents.
 endef
 
 define Package/mesh-ac/conffiles

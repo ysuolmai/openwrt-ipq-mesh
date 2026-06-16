@@ -11,7 +11,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/mesh-ac-local-member
   SECTION:=net
   CATEGORY:=Network
-  TITLE:=Mesh AC local member support
+  TITLE:=EasyMesh local member support
   DEPENDS:=+mesh-ac +mesh-agent +jshn
 endef
 

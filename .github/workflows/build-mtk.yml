@@ -1,4 +1,4 @@
-name: Build MTK Mesh
+name: Build MTK EasyMesh
 
 on:
   workflow_dispatch:

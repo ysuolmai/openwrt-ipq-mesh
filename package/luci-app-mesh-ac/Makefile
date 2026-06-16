@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-LUCI_TITLE:=LuCI support for Mesh AC
+LUCI_TITLE:=LuCI support for EasyMesh
 LUCI_DEPENDS:=+luci-base +mesh-ac
 
 PKG_LICENSE:=MIT

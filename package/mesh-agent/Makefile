@@ -16,7 +16,7 @@ define Package/mesh-agent
 endef
 
 define Package/mesh-agent/description
-  Managed AP agent for mesh-ac.
+  Managed AP agent for EasyMesh.
 endef
 
 define Package/mesh-agent/conffiles

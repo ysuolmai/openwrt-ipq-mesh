@@ -1,6 +1,6 @@
 {
 	"admin/services/mesh-ac": {
-		"title": "Mesh AC",
+		"title": "EasyMesh",
 		"action": {
 			"type": "view",
 			"path": "mesh-ac/overview"

@@ -17,8 +17,8 @@ CONFIG_FILE="$ROOT_DIR/configs/$CONFIG_NAME.txt"
 	exit 1
 }
 
-mkdir -p "$OPENWRT_DIR/package/openwrt-ipq-mesh"
-cp -R "$ROOT_DIR/package/." "$OPENWRT_DIR/package/openwrt-ipq-mesh/"
+mkdir -p "$OPENWRT_DIR/package/openwrt-easymesh"
+cp -R "$ROOT_DIR/package/." "$OPENWRT_DIR/package/openwrt-easymesh/"
 
 cat "$CONFIG_FILE" >> "$OPENWRT_DIR/.config"
 

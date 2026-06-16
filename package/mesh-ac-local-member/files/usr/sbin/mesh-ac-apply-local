@@ -76,7 +76,7 @@ if [ "$local_member" = "1" ]; then
 	json_close_object
 
 	json_add_object backhaul
-	json_add_string mesh_id "$(uci_get mesh_ac.main.mesh_id openwrt-ipq-backhaul)"
+	json_add_string mesh_id "$(uci_get mesh_ac.main.mesh_id openwrt-easymesh-backhaul)"
 	json_add_string mesh_key "$(uci_get mesh_ac.main.mesh_key change-this-mesh-password)"
 	json_add_string band "$(uci_get mesh_ac.main.band 5g)"
 	json_add_string channel_5g "$(uci_get mesh_ac.main.channel_5g 149)"

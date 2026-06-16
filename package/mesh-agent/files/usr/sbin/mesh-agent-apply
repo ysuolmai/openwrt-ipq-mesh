@@ -410,7 +410,7 @@ ieee80211r="$(jget '@.wifi.ieee80211r' 1)"
 mobility_domain="$(jget '@.wifi.mobility_domain' 4f57)"
 ft_over_ds="$(jget '@.wifi.ft_over_ds' 1)"
 
-mesh_id="$(jget '@.backhaul.mesh_id' openwrt-ipq-backhaul)"
+mesh_id="$(jget '@.backhaul.mesh_id' openwrt-easymesh-backhaul)"
 mesh_key="$(jget '@.backhaul.mesh_key' change-this-mesh-password)"
 band="$(jget '@.backhaul.band' 5g)"
 channel_5g="$(jget '@.backhaul.channel_5g' 149)"

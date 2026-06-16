@@ -116,6 +116,18 @@ elif [ "$lan_proto" = "static" ] && [ "$wan_bridged" != "1" ]; then
 	mode=gateway
 fi
 
+mesh_radio="$(uci_get wireless.mesh_backhaul.device "")"
+mesh_id="$(uci_get wireless.mesh_backhaul.mesh_id "")"
+mesh_key="$(uci_get wireless.mesh_backhaul.key "")"
+local_member_active=0
+[ -n "$mesh_id" ] && local_member_active=1
+client_key="$(uci_get wireless.mesh_ap_2g.key "")"
+[ -n "$client_key" ] || client_key="$(uci_get wireless.mesh_ap_5g.key "")"
+country="$(radio_value mesh_ap_2g country)"
+[ -n "$country" ] || country="$(radio_value mesh_ap_5g country)"
+backhaul_band=""
+[ -n "$mesh_radio" ] && backhaul_band="$(uci_get "wireless.$mesh_radio.band" "")"
+
 json_init
 
 json_add_object capabilities
@@ -135,13 +147,22 @@ json_add_boolean dhcp_enabled "$(bool_json "$dhcp_enabled")"
 json_close_object
 
 json_add_object wifi
+json_add_boolean local_member_active "$(bool_json "$local_member_active")"
 json_add_string ssid_2g "$(uci_get wireless.mesh_ap_2g.ssid "")"
 json_add_string ssid_5g "$(uci_get wireless.mesh_ap_5g.ssid "")"
+json_add_string key "$client_key"
+json_add_string country "$country"
 json_add_string channel_2g "$(radio_value mesh_ap_2g channel)"
 json_add_string channel_5g "$(radio_value mesh_ap_5g channel)"
 json_add_string htmode_2g "$(radio_value mesh_ap_2g htmode)"
 json_add_string htmode_5g "$(radio_value mesh_ap_5g htmode)"
-json_add_string mesh_id "$(uci_get wireless.mesh_backhaul.mesh_id "")"
+json_add_string ieee80211k "$(uci_get wireless.mesh_ap_2g.ieee80211k "")"
+json_add_string ieee80211v "$(uci_get wireless.mesh_ap_2g.bss_transition "")"
+json_add_string ieee80211r "$(uci_get wireless.mesh_ap_2g.ieee80211r "")"
+json_add_string mobility_domain "$(uci_get wireless.mesh_ap_2g.mobility_domain "")"
+json_add_string mesh_id "$mesh_id"
+json_add_string mesh_key "$mesh_key"
+json_add_string band "$backhaul_band"
 json_close_object
 
 json_dump

@@ -1,4 +1,4 @@
-name: Build IPQ Mesh
+name: Build IPQ EasyMesh
 
 on:
   workflow_dispatch:

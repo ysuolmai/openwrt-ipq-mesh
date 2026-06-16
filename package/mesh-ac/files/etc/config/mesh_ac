@@ -17,7 +17,7 @@ config controller 'main'
 	option mobility_domain '4f57'
 	option ft_over_ds '1'
 
-	option mesh_id 'openwrt-ipq-backhaul'
+	option mesh_id 'openwrt-easymesh-backhaul'
 	option mesh_key 'change-this-mesh-password'
 	option band '5g'
 	option channel_5g '149'

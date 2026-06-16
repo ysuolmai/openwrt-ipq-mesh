@@ -177,7 +177,7 @@ apply_config() {
 	ssid="$(jsonfilter -s "$cfg" -e '@.wifi.ssid' 2>/dev/null || printf '%s' OpenWrt-Mesh)"
 	ssid_2g="$(jsonfilter -s "$cfg" -e '@.wifi.ssid_2g' 2>/dev/null || printf '%s' "$ssid")"
 	ssid_5g="$(jsonfilter -s "$cfg" -e '@.wifi.ssid_5g' 2>/dev/null || printf '%s' "$ssid")"
-	mesh_id="$(jsonfilter -s "$cfg" -e '@.backhaul.mesh_id' 2>/dev/null || printf '%s' openwrt-ipq-backhaul)"
+	mesh_id="$(jsonfilter -s "$cfg" -e '@.backhaul.mesh_id' 2>/dev/null || printf '%s' openwrt-easymesh-backhaul)"
 
 	if [ -f /etc/mesh-agent/config.json ] && [ "$cfg" = "$(cat /etc/mesh-agent/config.json 2>/dev/null)" ]; then
 		if [ "$(uci -q get wireless.mesh_backhaul.mesh_id 2>/dev/null || true)" = "$mesh_id" ] &&

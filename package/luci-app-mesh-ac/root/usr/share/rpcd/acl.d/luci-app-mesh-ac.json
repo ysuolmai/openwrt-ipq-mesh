@@ -1,6 +1,6 @@
 {
 	"luci-app-mesh-ac": {
-		"description": "Grant access to Mesh AC configuration",
+		"description": "Grant access to EasyMesh configuration",
 		"read": {
 			"uci": [ "mesh_ac" ],
 			"file": {

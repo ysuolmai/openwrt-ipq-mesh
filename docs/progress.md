@@ -1,13 +1,13 @@
-# OpenWrt Mesh AC Progress
+# OpenWrt EasyMesh Progress
 
 Last updated: 2026-06-16
-Repository: https://github.com/ysuolmai/openwrt-ipq-mesh
+Repository: https://github.com/ysuolmai/openwrt-easymesh
 Branch: `main`
 Latest implementation commit: see `git log --oneline -1`.
 
 ## Current Snapshot - 2026-06-16
 
-Repository: https://github.com/ysuolmai/openwrt-ipq-mesh
+Repository: https://github.com/ysuolmai/openwrt-easymesh
 Branch: `main`
 Latest implementation commit: see `git log --oneline -1`.
 
@@ -15,7 +15,7 @@ Current direction:
 
 - This is an AC + managed AP firmware project, not a decentralized per-router mesh plugin.
 - AC owns the LuCI UI, global Wi-Fi/backhaul config, new-AP pairing gate, and config rendering.
-- AP firmware includes LuCI with the shadcn theme for local access, but no Mesh AC management app; it runs `mesh-agent`.
+- AP firmware includes LuCI with the shadcn theme for local access, but no EasyMesh management app; it runs `mesh-agent`.
 - AP first boot enters a safe bridge-only state: local DHCP is disabled, WAN/LAN are treated as the same L2 access side, and default OpenWrt/ImmortalWrt LAN AP SSIDs are removed.
 - When `pairing_enabled=1`, a new AP registers and immediately pulls config from AC, creating client AP SSIDs plus 802.11s backhaul.
 - When `pairing_enabled=0`, unknown APs cannot register; known APs can keep updating `last_seen` and pulling config.
@@ -26,7 +26,7 @@ Current direction:
 
 Latest implemented behavior:
 
-- LuCI Mesh AC page now shows `Current active state` from real system UCI state, not just `/etc/config/mesh_ac` desired values.
+- LuCI EasyMesh page now initializes form fields from real system UCI state, not just `/etc/config/mesh_ac` desired values.
 - `Network mode` selector is initialized from actual active state when the device is clearly in bridge/gateway mode, so it should not show stale `bridge` while the box is actually still gateway.
 - 2.4 GHz and 5 GHz client SSIDs are now separate fields: `ssid_2g` and `ssid_5g`.
 - Legacy `ssid` remains as fallback for upgrades.
@@ -269,7 +269,7 @@ Path: `package/luci-app-mesh-ac/`
 Provides LuCI page:
 
 ```text
-Services -> Mesh AC
+Services -> EasyMesh
 ```
 
 Current UI:
@@ -333,10 +333,10 @@ Workflows:
 Current behavior:
 
 - Manual `workflow_dispatch` only.
-- `Build IPQ Mesh` runs both IPQ AC and AP builds using matrix:
+- `Build IPQ EasyMesh` runs both IPQ AC and AP builds using matrix:
   - `IPQ60XX-MESH-AC`
   - `IPQ60XX-MESH-AP`
-- `Build MTK Mesh` runs both MT7981 AC and AP builds using matrix:
+- `Build MTK EasyMesh` runs both MT7981 AC and AP builds using matrix:
   - `MT7981-MESH-AC`
   - `MT7981-MESH-AP`
 - Inputs:
@@ -368,7 +368,7 @@ IPQ60XX-MESH-AP-ea53cef-9
 Recent successful config-only workflow run:
 
 ```text
-https://github.com/ysuolmai/openwrt-ipq-mesh/actions/runs/27468404699
+https://github.com/ysuolmai/openwrt-easymesh/actions/runs/27468404699
 ```
 
 Full firmware build has not yet been run after the latest changes.
@@ -421,7 +421,7 @@ Implemented locally for MT7981 support:
 Validation still needed after push:
 
 ```sh
-gh workflow run build-mtk.yml -R ysuolmai/openwrt-ipq-mesh -f test_config_only=true
+gh workflow run build-mtk.yml -R ysuolmai/openwrt-easymesh -f test_config_only=true
 ```
 
 ## Important Known Issues / TODO
@@ -503,20 +503,20 @@ git log --oneline --decorate -5
 Run config-only workflow:
 
 ```sh
-gh workflow run build.yml -R ysuolmai/openwrt-ipq-mesh -f test_config_only=true
-gh workflow run build-mtk.yml -R ysuolmai/openwrt-ipq-mesh -f test_config_only=true
+gh workflow run build.yml -R ysuolmai/openwrt-easymesh -f test_config_only=true
+gh workflow run build-mtk.yml -R ysuolmai/openwrt-easymesh -f test_config_only=true
 ```
 
 Watch a run:
 
 ```sh
-gh run watch <run-id> -R ysuolmai/openwrt-ipq-mesh --exit-status
+gh run watch <run-id> -R ysuolmai/openwrt-easymesh --exit-status
 ```
 
 List releases:
 
 ```sh
-gh release list -R ysuolmai/openwrt-ipq-mesh --limit 8
+gh release list -R ysuolmai/openwrt-easymesh --limit 8
 ```
 
 ## Handoff Notes
