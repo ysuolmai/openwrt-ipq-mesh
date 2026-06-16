@@ -47,7 +47,7 @@ AC 的 `Network mode` 控制本机网络角色：`Bridge` 模式下 WAN、LAN、
 - 让 AC 本机 Wi-Fi 也作为 Mesh 成员加入同一套回程
 - 根据本机是否存在 Wi-Fi 驱动或 `/etc/config/wireless` 决定是否执行
 - `local_member=0` 时保持 ath11k NSS offload 开启
-- `local_member=1` 时关闭 ath11k NSS offload，并应用 AC 本机 Wi-Fi / 802.11s / batman 配置
+- `local_member=1` 时关闭 ath11k NSS offload，并应用 AC 本机 Wi-Fi / 802.11s / batman 配置；如果 ath11k 模块已加载，会自动安排一次重启让模块参数生效
 
 ### `luci-app-mesh-ac`
 
@@ -218,7 +218,7 @@ Country
 
 `Network mode` 默认是 `Bridge`：AC 的 WAN/LAN、客户端 Wi-Fi 和 Mesh 回程会处在同一个二层 LAN，客户端地址来自上游 DHCP。如果 AC 要作为主路由提供 DHCP/NAT，改成 `Gateway`。
 
-当前 AC 固件包含 `mesh-ac-local-member`。点击 LuCI 底部 `Save & Apply` 后，如果机器有本机 Wi-Fi，AC 会按 `Network mode` 应用 WAN/LAN 桥接或网关网络。`Enable AC local mesh member` 默认关闭，此时 AC 保持 ath11k NSS offload 开启；如果这台 AC 本身也要发 Wi-Fi / 加入 Mesh，再打开该选项，应用时会关闭 ath11k NSS offload，并清理默认 `ImmortalWrt` 等 LAN AP SSID，按 2.4 GHz / 5 GHz 各自的 SSID 创建客户端 Wi-Fi、802.11s 回程、`batman-adv` 和 DAWN 配置。
+当前 AC 固件包含 `mesh-ac-local-member`。点击 LuCI 底部 `Save & Apply` 后，如果机器有本机 Wi-Fi，AC 会按 `Network mode` 应用 WAN/LAN 桥接或网关网络。`Enable AC local mesh member` 默认关闭，此时 AC 保持 ath11k NSS offload 开启；如果这台 AC 本身也要发 Wi-Fi / 加入 Mesh，再打开该选项，应用时会关闭 ath11k NSS offload；如果 ath11k 模块已加载，会自动重启一次，重启后继续应用本机 Mesh 配置，并清理默认 `ImmortalWrt` 等 LAN AP SSID，按 2.4 GHz / 5 GHz 各自的 SSID 创建客户端 Wi-Fi、802.11s 回程、`batman-adv` 和 DAWN 配置。
 
 如果在其他 no-wifi 编译项目中只安装 `mesh-ac` + `luci-app-mesh-ac`，它就是纯 AC 控制器插件，不依赖 Wi-Fi / `mesh-agent` / `batman-adv`，LuCI 也不会显示本机 Mesh 成员相关界面。
 

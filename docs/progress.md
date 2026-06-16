@@ -21,7 +21,7 @@ Current direction:
 - When `pairing_enabled=0`, unknown APs cannot register; known APs can keep updating `last_seen` and pulling config.
 - AC can run in `Bridge` mode or `Gateway` mode. AP always behaves as a bridge node.
 - `mesh-ac` can run as a controller-only plugin on no-wifi hardware. `mesh-ac-local-member` adds AC local mesh support for Wi-Fi hardware.
-- AC defaults to controller/router-only mode with ath11k NSS offload enabled. When `local_member=1` and local Wi-Fi is detected, AC becomes a local mesh member and ath11k NSS offload is disabled.
+- AC defaults to controller/router-only mode with ath11k NSS offload enabled. When `local_member=1` and local Wi-Fi is detected, AC becomes a local mesh member and ath11k NSS offload is disabled; if ath11k is already loaded, the firmware schedules one reboot and resumes local apply after boot.
 
 Latest implemented behavior:
 
@@ -228,7 +228,7 @@ Current behavior:
 - Depends on `mesh-agent`, so it can reuse the same apply helper as APs.
 - Detects local Wi-Fi by checking `/etc/config/wireless`, `/sys/class/ieee80211`, or `iw phy`.
 - Skips local apply on no-wifi hardware even if installed.
-- Keeps ath11k NSS offload enabled while `local_member=0`; disables it while `local_member=1`.
+- Keeps ath11k NSS offload enabled while `local_member=0`; disables it while `local_member=1`, scheduling one reboot if ath11k was already loaded.
 
 ### `mesh-agent`
 
@@ -384,7 +384,7 @@ Implemented design:
 - `mesh-agent-apply --local-ac` applies Wi-Fi APs, 802.11s backhaul, `batman-adv`, and DAWN while preserving AC LAN/WAN/DHCP/firewall behavior. It removes existing LAN AP Wi-Fi interfaces such as the default `ImmortalWrt` SSID so the AC only advertises the configured mesh client SSID.
 - Normal managed AP agent service is disabled on AC images so AC does not register to itself as a normal AP.
 - Local mesh member mode is explicit through LuCI or `/usr/sbin/mesh-ac-apply-local`; first boot does not broadcast placeholder Wi-Fi credentials automatically.
-- AC keeps ath11k NSS offload enabled while `local_member=0`, and disables it while `local_member=1` because ath11k NSS offload breaks 802.11s mesh point interfaces on this target.
+- AC keeps ath11k NSS offload enabled while `local_member=0`, and disables it while `local_member=1` because ath11k NSS offload breaks 802.11s mesh point interfaces on this target. If the ath11k module was already loaded, the system schedules one reboot so `nss_offload=0` is applied from module load time, then resumes local mesh apply.
 
 Important safety rule:
 

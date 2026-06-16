@@ -3,6 +3,7 @@
 set -e
 
 . /usr/share/libubox/jshn.sh
+. /usr/lib/mesh/ath11k-nss.sh
 
 uci_get() {
 	uci -q get "$1" 2>/dev/null || printf '%s' "$2"
@@ -95,11 +96,15 @@ fi
 json_dump > "$tmp"
 
 if [ "$local_member" = "1" ]; then
-	set_ath11k_nss_offload 0
+	if ath11k_nss_set_offload 0 "AC local member enable" "/etc/mesh-ac/pending-local-apply"; then
+		logger -t mesh-ac "scheduled reboot before applying local mesh member config"
+		exit 0
+	fi
 	/usr/sbin/mesh-agent-apply --local-ac "$tmp"
 	logger -t mesh-ac "applied local mesh member config"
 else
-	set_ath11k_nss_offload 1
+	rm -f /etc/mesh-ac/pending-local-apply
+	ath11k_nss_set_offload 1 "AC controller mode" || true
 	/usr/sbin/mesh-agent-apply --local-ac --network-only "$tmp"
 	logger -t mesh-ac "applied AC network config"
 fi
