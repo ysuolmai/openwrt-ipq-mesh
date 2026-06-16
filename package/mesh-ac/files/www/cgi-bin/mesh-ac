@@ -63,12 +63,14 @@ register_node() {
 render_config() {
 	local approved_file="$1"
 	local approved
+	local ssid_default
 
 	approved="$(jsonfilter -i "$approved_file" -e '@.approved' 2>/dev/null || echo false)"
 	[ "$approved" = "true" ] || {
 		printf '{"approved":false}\n'
 		return
 	}
+	ssid_default="$(uci_get mesh_ac.main.ssid OpenWrt-Mesh)"
 
 	cat <<EOF
 {
@@ -78,7 +80,9 @@ render_config() {
     "cidr": "$(uci_get mesh_ac.main.network_cidr 192.168.50.0/24)"
   },
   "wifi": {
-    "ssid": "$(uci_get mesh_ac.main.ssid OpenWrt-Mesh)",
+    "ssid": "$ssid_default",
+    "ssid_2g": "$(uci_get mesh_ac.main.ssid_2g "$ssid_default")",
+    "ssid_5g": "$(uci_get mesh_ac.main.ssid_5g "$ssid_default")",
     "key": "$(uci_get mesh_ac.main.key change-this-client-password)",
     "country": "$(uci_get mesh_ac.main.country US)",
     "encryption": "$(uci_get mesh_ac.main.encryption psk2+ccmp)",

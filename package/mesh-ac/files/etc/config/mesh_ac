@@ -6,6 +6,8 @@ config controller 'main'
 	option network_cidr '192.168.50.0/24'
 
 	option ssid 'OpenWrt-Mesh'
+	option ssid_2g 'OpenWrt-Mesh'
+	option ssid_5g 'OpenWrt-Mesh'
 	option key 'change-this-client-password'
 	option country 'US'
 	option encryption 'psk2+ccmp'

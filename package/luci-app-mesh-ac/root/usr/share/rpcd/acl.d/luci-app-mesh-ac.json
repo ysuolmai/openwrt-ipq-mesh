@@ -5,7 +5,8 @@
 			"uci": [ "mesh_ac" ],
 			"file": {
 				"/etc/mesh-ac/nodes/*.json": [ "read" ],
-				"/usr/sbin/mesh-ac-list": [ "exec" ]
+				"/usr/sbin/mesh-ac-list": [ "exec" ],
+				"/usr/sbin/mesh-ac-status": [ "exec" ]
 			}
 		},
 		"write": {

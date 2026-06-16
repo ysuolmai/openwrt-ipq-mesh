@@ -10,7 +10,7 @@
 - 配对后 AP 保存配置，即使 AC 暂时离线也继续工作
 - 有线回程优先，无线 802.11s 回程作为兜底
 - Wi-Fi 漫游使用 OpenWrt 的 `wpad` + 802.11k/v/r，客户端状态/漫游引导复用 DAWN
-- AC 如果本身带 Wi-Fi，也可以作为本地 Mesh 成员加入同一套 SSID/回程
+- AC 如果本身带 Wi-Fi，也可以作为本地 Mesh 成员加入同一套回程，并按 2.4 GHz / 5 GHz 配置客户端 SSID
 
 ## 架构
 
@@ -21,7 +21,7 @@
     |
 托管 AP 1  )) 802.11s wireless backhaul ))  托管 AP 2
     |
-客户端 Wi-Fi SSID
+2.4 GHz / 5 GHz 客户端 Wi-Fi SSID
 ```
 
 AC 可以是负责拨号和 DHCP 的主路由，也可以只是挂在现有主路由下面的桥接节点。AP 不负责拨号、DHCP 或 NAT；批准前和批准后都会把 WAN/LAN 当作同一个二层接入口。
@@ -45,7 +45,7 @@ AC 的 `Network mode` 控制本机网络角色：`Bridge` 模式下 WAN、LAN、
 
 AC 的 LuCI 管理页面：
 
-- 配置客户端 SSID / 密码
+- 配置 2.4 GHz / 5 GHz 客户端 SSID / 密码
 - 配置无线回程 `mesh_id` / `mesh_key`
 - 配置 802.11k/v/r
 - 配置 DAWN 开关
@@ -67,7 +67,7 @@ Services -> Mesh AC
 - 等待 AC 批准
 - 拉取 AC 下发的配置
 - 写入 OpenWrt UCI 配置
-- 生成 AP SSID、802.11s 回程、batman-adv、DAWN 参数
+- 生成 2.4 GHz / 5 GHz AP SSID、802.11s 回程、batman-adv、DAWN 参数
 - 在 AC 本地成员模式下可用 `--local-ac` 按 `Bridge` 或 `Gateway` 网络模式应用本机配置
 
 ## 固件目标
@@ -197,17 +197,21 @@ Services -> Mesh AC
 建议先修改：
 
 ```text
-Client SSID
+2.4 GHz client SSID
+5 GHz client SSID
 Client password
 Mesh ID
 Mesh key
 Country
 5 GHz channel
+2.4 GHz channel
 ```
+
+页面顶部的 `Current active state` 显示设备当前实际生效的网络和 Wi-Fi 状态。`Network mode` 默认按实际状态初始化，避免 `/etc/config/mesh_ac` 中的期望值和系统当前网络状态不一致时误导操作。
 
 `Network mode` 默认是 `Bridge`：AC 的 WAN/LAN、客户端 Wi-Fi 和 Mesh 回程会处在同一个二层 LAN，客户端地址来自上游 DHCP。如果 AC 要作为主路由提供 DHCP/NAT，改成 `Gateway`。
 
-点击 LuCI 底部 `Save & Apply` 后，AC 会按 `Network mode` 应用 WAN/LAN 桥接或网关网络。如果这台 AC 本身也要发 Wi-Fi / 加入 Mesh，保持 `Enable AC local mesh member` 开启；应用时还会清理默认 `ImmortalWrt` 等 LAN AP SSID，创建客户端 SSID、802.11s 回程、`batman-adv` 和 DAWN 配置。
+点击 LuCI 底部 `Save & Apply` 后，AC 会按 `Network mode` 应用 WAN/LAN 桥接或网关网络。如果这台 AC 本身也要发 Wi-Fi / 加入 Mesh，保持 `Enable AC local mesh member` 开启；应用时还会清理默认 `ImmortalWrt` 等 LAN AP SSID，按 2.4 GHz / 5 GHz 各自的 SSID 创建客户端 Wi-Fi、802.11s 回程、`batman-adv` 和 DAWN 配置。
 
 ### 2. 刷 AP 固件
 
@@ -246,7 +250,7 @@ AP 会自动注册。AC 页面会出现待批准 AP，点击 `Approve`。
 
 批准后 AP 会拉取配置并应用：
 
-- 客户端 Wi-Fi SSID
+- 2.4 GHz / 5 GHz 2.4 GHz / 5 GHz 客户端 Wi-Fi SSID
 - 802.11k/v/r
 - 802.11s 无线回程
 - batman-adv

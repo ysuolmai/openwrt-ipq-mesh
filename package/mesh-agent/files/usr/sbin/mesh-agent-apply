@@ -339,6 +339,8 @@ fi
 wifi config >/dev/null 2>&1 || true
 
 ssid="$(jget '@.wifi.ssid' OpenWrt-Mesh)"
+ssid_2g="$(jget '@.wifi.ssid_2g' "$ssid")"
+ssid_5g="$(jget '@.wifi.ssid_5g' "$ssid")"
 key="$(jget '@.wifi.key' change-this-client-password)"
 country="$(jget '@.wifi.country' US)"
 encryption="$(jget '@.wifi.encryption' psk2+ccmp)"
@@ -419,6 +421,7 @@ fi
 add_ap_iface() {
 	local radio="$1"
 	local name="$2"
+	local ap_ssid="$3"
 
 	[ -n "$radio" ] || return
 	uci -q set "wireless.$name=wifi-iface"
@@ -426,7 +429,7 @@ add_ap_iface() {
 	uci -q set "wireless.$name.device=$radio"
 	uci -q set "wireless.$name.mode=ap"
 	uci -q set "wireless.$name.network=lan"
-	uci -q set "wireless.$name.ssid=$ssid"
+	uci -q set "wireless.$name.ssid=$ap_ssid"
 	uci -q set "wireless.$name.encryption=$encryption"
 	uci -q set "wireless.$name.key=$key"
 	uci -q set "wireless.$name.ieee80211k=$ieee80211k"
@@ -444,8 +447,8 @@ add_ap_iface() {
 	uci -q set "wireless.$name.disabled=0"
 }
 
-add_ap_iface "$radio_2g" mesh_ap_2g
-add_ap_iface "$radio_5g" mesh_ap_5g
+add_ap_iface "$radio_2g" mesh_ap_2g "$ssid_2g"
+add_ap_iface "$radio_5g" mesh_ap_5g "$ssid_5g"
 
 if [ "$dawn_enabled" = "1" ]; then
 	uci -q set dawn.@metric[0].kicking="$dawn_kicking"

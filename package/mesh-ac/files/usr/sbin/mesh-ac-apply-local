@@ -11,6 +11,7 @@ uci_get() {
 local_member="$(uci_get mesh_ac.main.local_member 1)"
 network_mode="$(uci_get mesh_ac.main.network_mode bridge)"
 network_cidr="$(uci_get mesh_ac.main.network_cidr 192.168.50.0/24)"
+ssid_default="$(uci_get mesh_ac.main.ssid OpenWrt-Mesh)"
 
 tmp="/tmp/mesh-ac-local-config.json"
 umask 077
@@ -25,7 +26,9 @@ json_close_object
 
 if [ "$local_member" = "1" ]; then
 	json_add_object wifi
-	json_add_string ssid "$(uci_get mesh_ac.main.ssid OpenWrt-Mesh)"
+	json_add_string ssid "$ssid_default"
+	json_add_string ssid_2g "$(uci_get mesh_ac.main.ssid_2g "$ssid_default")"
+	json_add_string ssid_5g "$(uci_get mesh_ac.main.ssid_5g "$ssid_default")"
 	json_add_string key "$(uci_get mesh_ac.main.key change-this-client-password)"
 	json_add_string country "$(uci_get mesh_ac.main.country US)"
 	json_add_string encryption "$(uci_get mesh_ac.main.encryption psk2+ccmp)"

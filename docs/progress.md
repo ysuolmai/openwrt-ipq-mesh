@@ -30,7 +30,7 @@ Main router / AC
     |
 Managed AP 1  )) 802.11s wireless backhaul ))  Managed AP 2
     |
-Client Wi-Fi SSID
+2.4 GHz / 5 GHz client Wi-Fi SSID
 ```
 
 Important design decision:
@@ -89,7 +89,7 @@ Current behavior:
 - Default AC URL is `http://192.168.50.1/cgi-bin/mesh-ac`.
 - Pulls AC config after approval.
 - Applies OpenWrt UCI settings for:
-  - client AP SSID
+  - 2.4 GHz / 5 GHz client AP SSID
   - 802.11k/v/r
   - 802.11s mesh backhaul
   - `batman-adv`
