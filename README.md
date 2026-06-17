@@ -62,8 +62,11 @@ MTK 构建会保留并注入 `sx_7981r128` 设备支持。
 - `Bridge`：AC、AP 和客户端都从上游 DHCP 获取地址，适合已有主路由的家庭网络。
 - `Gateway`：AC 自己作为主路由提供 DHCP/NAT，AP 仍作为桥接节点。
 
-## 更多资料
+## 源代码与致谢
 
-旧版详细 README 已移到：`docs/full-readme.md`。
+本项目基于以下 OpenWrt / ImmortalWrt 源码构建：
 
-开发进度和 TODO 记录在：`docs/progress.md`。
+- https://github.com/VIKINGYFY/immortalwrt.git
+- https://github.com/Yuzhii0718/immortalwrt-mt798x-6.6-padavanonly.git
+
+感谢各位上游大佬的源码、驱动、设备适配和编译脚本。
