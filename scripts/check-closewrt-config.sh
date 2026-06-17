@@ -23,6 +23,15 @@ require_symbol() {
 	fi
 }
 
+require_config_value() {
+	local key="$1"
+	local value="$2"
+	if ! grep -q "^${key}=${value}$" "$config_file"; then
+		echo "missing required config: ${key}=${value}" >&2
+		missing=1
+	fi
+}
+
 require_expected_device_symbols() {
 	local prefix="$1"
 	local label="$2"
@@ -86,6 +95,8 @@ require_closewrt_mt7981_target() {
 	require_symbol CONFIG_MTK_CONNINFRA_APSOC
 	require_symbol CONFIG_MTK_CONNINFRA_APSOC_MT7981
 	require_symbol CONFIG_MTK_FIRST_IF_MT7981
+	require_config_value CONFIG_WARP_VERSION 2
+	require_config_value CONFIG_WARP_CHIPSET '"mt7981"'
 	require_symbol CONFIG_PACKAGE_luci-app-mtwifi-cfg
 	require_symbol CONFIG_PACKAGE_luci-app-turboacc-mtk
 	require_symbol CONFIG_PACKAGE_kmod-conninfra
