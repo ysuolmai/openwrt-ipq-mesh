@@ -10,8 +10,11 @@ if [ -f /etc/config/easymesh ]; then
 	/etc/init.d/easymesh-agent disable >/dev/null 2>&1 || true
 	/etc/init.d/easymesh-backhaul enable >/dev/null 2>&1 || true
 else
-	ath11k_nss_set_module_config 0
-	echo 0 > /sys/module/ath11k/parameters/nss_offload 2>/dev/null || true
+	if ath11k_nss_mesh_support_available; then
+		ath11k_nss_set_offload 1 "AP NSS mesh support" || true
+	else
+		ath11k_nss_set_offload 0 "AP mesh compatibility fallback" || true
+	fi
 	/usr/sbin/easymesh-agent-apply --network-only >/dev/null 2>&1 || true
 	/etc/init.d/easymesh-agent enable >/dev/null 2>&1 || true
 	/etc/init.d/easymesh-backhaul enable >/dev/null 2>&1 || true

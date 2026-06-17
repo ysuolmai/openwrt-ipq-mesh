@@ -6,6 +6,15 @@ uci -q get easymesh.main.local_member >/dev/null 2>&1 || uci set easymesh.main.l
 uci -q get easymesh.main.network_mode >/dev/null 2>&1 || uci set easymesh.main.network_mode='gateway'
 uci commit easymesh >/dev/null 2>&1 || true
 
+if [ -x /usr/sbin/easymesh-agent-apply ]; then
+	network_mode="$(uci -q get easymesh.main.network_mode 2>/dev/null || echo gateway)"
+	network_cidr="$(uci -q get easymesh.main.network_cidr 2>/dev/null || echo 192.168.50.0/24)"
+	tmp="/tmp/easymesh-controller-network.json"
+	umask 077
+	printf '{"network":{"mode":"%s","cidr":"%s"}}\n' "$network_mode" "$network_cidr" > "$tmp"
+	/usr/sbin/easymesh-agent-apply --local-ac --network-only "$tmp" >/dev/null 2>&1 || logger -t easymesh-controller "initial local AC network apply failed"
+fi
+
 /etc/init.d/easymesh-controller enable >/dev/null 2>&1 || true
 /etc/init.d/uhttpd enable >/dev/null 2>&1 || true
 /etc/init.d/uhttpd restart >/dev/null 2>&1 || true

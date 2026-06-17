@@ -44,12 +44,6 @@ clear_prepared_ath11k_module_override() {
 	rm -f "$path"
 }
 
-install_ipq_ap_ath11k_module_override() {
-	local modules_dir="$OPENWRT_DIR/files/etc/modules.d"
-
-	mkdir -p "$modules_dir"
-	printf '%s\n' 'ath11k nss_offload=0 frame_mode=2' > "$modules_dir/ath11k"
-}
 
 inject_sx_7981r128() {
 	local dts_src="$ROOT_DIR/target/mediatek/dts/mt7981b-sx-7981r128.dts"
@@ -167,7 +161,6 @@ case "$CONFIG_NAME" in
 		;;
 	IPQ60XX-MESH-AP)
 		install_shadcn_theme
-		install_ipq_ap_ath11k_module_override
 		;;
 	MT7981-MESH-AC)
 		install_shadcn_theme
