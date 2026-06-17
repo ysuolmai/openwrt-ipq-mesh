@@ -26,8 +26,10 @@ require_symbol() {
 require_expected_device_symbols() {
 	local prefix="$1"
 	local label="$2"
+	local source_file="${3:-}"
 	local symbols
 	local symbol
+	local device
 
 	if [ ! -f "$expected_config" ]; then
 		echo "missing expected config for ${label}: ${expected_config}" >&2
@@ -43,7 +45,20 @@ require_expected_device_symbols() {
 	fi
 
 	for symbol in $symbols; do
-		require_symbol "$symbol"
+		if grep -q "^${symbol}=y$" "$config_file"; then
+			continue
+		fi
+
+		device="${symbol#${prefix}}"
+		if [ -n "$source_file" ] &&
+			[ -f "$source_file" ] &&
+			! grep -Eq "(^|[[:space:]])(define Device/${device}|TARGET_DEVICES[[:space:]]*\+=[[:space:]]*${device})([[:space:]]|$)" "$source_file"; then
+			echo "warning: skipping unsupported target device from ${label}: ${device}" >&2
+			continue
+		fi
+
+		echo "missing required config: ${symbol}=y" >&2
+		missing=1
 	done
 }
 
@@ -129,7 +144,8 @@ require_mt7981_target() {
 	require_symbol CONFIG_TARGET_mediatek_filogic
 	require_expected_device_symbols \
 		CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_ \
-		"OpenWRT-CI MEDIATEK device list"
+		"OpenWRT-CI MEDIATEK device list" \
+		"$mt7981_image_mk"
 
 	require_symbol CONFIG_PACKAGE_kmod-mt7915e
 	require_symbol CONFIG_PACKAGE_kmod-mt7981-firmware
