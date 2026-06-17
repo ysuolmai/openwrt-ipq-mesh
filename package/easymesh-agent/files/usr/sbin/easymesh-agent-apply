@@ -370,7 +370,7 @@ apply_network_config() {
 . /lib/functions.sh
 
 if [ "$network_only" = "1" ]; then
-	network_mode="$(jget '@.network.mode' bridge)"
+	network_mode="$(jget '@.network.mode' gateway)"
 	network_cidr="$(jget '@.network.cidr' 192.168.50.0/24)"
 	[ "$local_ac" = "1" ] || network_mode="bridge"
 	lan_prefix="${network_cidr#*/}"
@@ -426,7 +426,7 @@ htmode_5g="$(jget '@.backhaul.htmode_5g' HE80)"
 htmode_2g="$(jget '@.backhaul.htmode_2g' HE20)"
 wired_preferred="$(jget '@.backhaul.wired_preferred' 1)"
 
-network_mode="$(jget '@.network.mode' bridge)"
+network_mode="$(jget '@.network.mode' gateway)"
 network_cidr="$(jget '@.network.cidr' 192.168.50.0/24)"
 lan_prefix="${network_cidr#*/}"
 lan_network="${network_cidr%/*}"

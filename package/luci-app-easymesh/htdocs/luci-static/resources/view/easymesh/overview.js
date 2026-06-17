@@ -101,13 +101,13 @@ return view.extend({
 				return localMemberActive ? '1' : '0';
 			};
 			o = s.option(form.ListValue, 'network_mode', _('Network mode'));
-			o.value('bridge', _('Bridge'));
 			o.value('gateway', _('Gateway'));
-			o.default = 'bridge';
+			o.value('bridge', _('Bridge'));
+			o.default = 'gateway';
 			o.cfgvalue = function(section_id) {
 				if (activeMode === 'bridge' || activeMode === 'gateway')
 					return activeMode;
-				return uci.get('easymesh', section_id, 'network_mode') || 'bridge';
+				return uci.get('easymesh', section_id, 'network_mode') || 'gateway';
 			};
 			o = s.option(form.Value, 'network_cidr', _('Gateway LAN CIDR'));
 			o.default = '192.168.50.0/24';
