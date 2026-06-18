@@ -12,7 +12,7 @@ define Package/easymesh-controller
   SECTION:=net
   CATEGORY:=Network
   TITLE:=EasyMesh controller service
-  DEPENDS:=+uhttpd +uhttpd-mod-ubus +libustream-openssl +jsonfilter +jshn +umdns
+  DEPENDS:=+uhttpd +uhttpd-mod-ubus +jsonfilter +jshn +umdns
 endef
 
 define Package/easymesh-controller/description

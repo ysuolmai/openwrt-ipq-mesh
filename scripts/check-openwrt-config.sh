@@ -125,6 +125,13 @@ require_common_mesh_packages() {
 	require_symbol CONFIG_PACKAGE_iwinfo
 }
 
+require_luci_ssl() {
+	case "$config_name" in
+		IPQ60XX-*) require_symbol CONFIG_PACKAGE_luci-ssl-openssl ;;
+		*) require_symbol CONFIG_PACKAGE_luci-ssl ;;
+	esac
+}
+
 require_ipq60xx_target() {
 	require_symbol CONFIG_TARGET_qualcommax
 	require_symbol CONFIG_TARGET_qualcommax_ipq60xx
@@ -161,7 +168,7 @@ require_mt7981_target() {
 
 require_ac_packages() {
 	require_symbol CONFIG_PACKAGE_luci
-	require_symbol CONFIG_PACKAGE_luci-ssl
+	require_luci_ssl
 	require_symbol CONFIG_PACKAGE_easymesh-controller
 	require_symbol CONFIG_PACKAGE_easymesh-local-member
 	require_symbol CONFIG_PACKAGE_easymesh-agent
@@ -174,19 +181,9 @@ require_ac_packages() {
 
 require_ap_packages() {
 	require_symbol CONFIG_PACKAGE_luci
-	require_symbol CONFIG_PACKAGE_luci-ssl
+	require_luci_ssl
 	require_symbol CONFIG_PACKAGE_luci-theme-shadcn
 	require_symbol CONFIG_PACKAGE_easymesh-agent
-}
-
-require_ipq_nss_mesh_offload() {
-	require_symbol CONFIG_ATH11K_NSS_SUPPORT
-	require_symbol CONFIG_ATH11K_NSS_MESH_SUPPORT
-	require_symbol CONFIG_PACKAGE_kmod-qca-nss-drv
-	require_symbol CONFIG_PACKAGE_kmod-qca-nss-drv-wifi-meshmgr
-	require_symbol CONFIG_NSS_DRV_WIFIOFFLOAD_ENABLE
-	require_symbol CONFIG_NSS_DRV_WIFI_EXT_VDEV_ENABLE
-	require_symbol CONFIG_NSS_DRV_WIFI_MESH_ENABLE
 }
 
 case "$config_name" in
@@ -194,13 +191,11 @@ case "$config_name" in
 		require_ipq60xx_target
 		require_common_mesh_packages
 		require_ac_packages
-		require_ipq_nss_mesh_offload
 		;;
 	IPQ60XX-MESH-AP)
 		require_ipq60xx_target
 		require_common_mesh_packages
 		require_ap_packages
-		require_ipq_nss_mesh_offload
 		;;
 	MT7981-MESH-AC)
 		require_mt7981_target

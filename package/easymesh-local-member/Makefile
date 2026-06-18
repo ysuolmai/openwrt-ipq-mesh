@@ -12,7 +12,7 @@ define Package/easymesh-local-member
   SECTION:=net
   CATEGORY:=Network
   TITLE:=EasyMesh local member support
-  DEPENDS:=+easymesh-controller +easymesh-agent +jshn
+  DEPENDS:=+easymesh-controller +jshn
 endef
 
 define Package/easymesh-local-member/description
