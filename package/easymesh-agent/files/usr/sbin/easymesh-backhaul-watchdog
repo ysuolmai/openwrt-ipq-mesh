@@ -66,6 +66,11 @@ port_state() {
 	done
 }
 
+ensure_bridge_promisc() {
+	[ -e "/sys/class/net/$BRIDGE_NAME/brif/bat0" ] || return 0
+	ip link set "$BRIDGE_NAME" promisc on >/dev/null 2>&1 || true
+}
+
 kick_lan_traffic() {
 	local gw
 
@@ -102,6 +107,8 @@ flush_learning_state() {
 last_state=""
 
 while true; do
+	ensure_bridge_promisc
+
 	if ! wired_preferred_enabled; then
 		sleep 5
 		last_state=""
@@ -112,8 +119,10 @@ while true; do
 	if [ "$state" != "$last_state" ]; then
 		ports="$(wired_bridge_ports | sort | tr '\n' ' ')"
 		if [ -n "$last_state" ]; then
+			ensure_bridge_promisc
 			flush_learning_state "wired link change" "$ports"
 		elif [ -n "$state" ]; then
+			ensure_bridge_promisc
 			flush_learning_state "startup" "$ports"
 		fi
 		last_state="$state"

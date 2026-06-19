@@ -227,8 +227,12 @@ set_bat0_bridge_port() {
 
 	if [ "$include" = "1" ]; then
 		add_bridge_port "$section" bat0
+		uci -q set "network.$section.promisc=1"
+		ip link set br-lan promisc on >/dev/null 2>&1 || true
 	else
 		uci -q del_list "network.$section.ports=bat0" >/dev/null 2>&1 || true
+		uci -q delete "network.$section.promisc" >/dev/null 2>&1 || true
+		ip link set br-lan promisc off >/dev/null 2>&1 || true
 	fi
 }
 
